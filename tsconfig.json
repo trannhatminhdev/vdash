@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
+    "target": "ES2021",
+    "module": "ESNext",
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "useDefineForClassFields": false,
+    "experimentalDecorators": true,
+    "allowImportingTsExtensions": true,
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "./src",
+    "paths": {
+      "src/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "src/**/*.json"]
+}

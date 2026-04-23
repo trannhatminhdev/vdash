@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DashCraft — JSON-driven dashboard generator demo" />
+  <title>DashCraft — Dashboard Preview</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ── Global reset ────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e4e6f0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      min-height: 100vh;
+    }
+
+    /* ── Top toolbar ─────────────────────────────── */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: rgba(15, 17, 23, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .toolbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .toolbar-brand .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6c63ff, #00d2ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .toolbar-btn {
+      padding: 8px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #e4e6f0;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toolbar-btn:hover {
+      background: rgba(108, 99, 255, 0.15);
+      border-color: #6c63ff;
+    }
+
+    .toolbar-btn.primary {
+      background: linear-gradient(135deg, #6c63ff, #5b52e0);
+      border-color: #6c63ff;
+    }
+
+    .toolbar-btn.primary:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    /* ── JSON editor modal ───────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      width: 90vw;
+      max-width: 800px;
+      max-height: 80vh;
+      background: #1c1f2e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #8b8fa3;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    .modal-body { flex: 1; overflow: hidden; padding: 16px 24px; }
+
+    .modal-body textarea {
+      width: 100%;
+      height: 50vh;
+      background: #0f1117;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: #e4e6f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 16px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .modal-body textarea:focus {
+      border-color: #6c63ff;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* ── Status bar ──────────────────────────────── */
+    .status-bar {
+      padding: 8px 24px;
+      font-size: 11px;
+      color: #5a5e72;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      gap: 20px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34d399;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    /* Error toast */
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: rgba(248, 113, 113, 0.15);
+      border: 1px solid #f87171;
+      border-radius: 10px;
+      color: #f87171;
+      font-size: 13px;
+      z-index: 300;
+      max-width: 400px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.show { display: block; }
+
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Toolbar -->
+  <header class="toolbar">
+    <div class="toolbar-brand">
+      <div class="logo">⚡</div>
+      DashCraft
+    </div>
+    <div class="toolbar-actions">
+      <button id="btn-edit" class="toolbar-btn">✏️ Edit JSON</button>
+      <button id="btn-toggle-theme" class="toolbar-btn">🌙 Toggle Theme</button>
+      <button id="btn-load-file" class="toolbar-btn primary">📂 Load JSON File</button>
+      <input type="file" id="file-input" accept=".json" hidden />
+    </div>
+  </header>
+
+  <!-- Dashboard container -->
+  <main id="app"></main>
+
+  <!-- Status bar -->
+  <footer class="status-bar">
+    <span><span class="status-dot"></span>Dashboard loaded</span>
+    <span id="status-info">—</span>
+  </footer>
+
+  <!-- JSON Editor Modal -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📝 Edit Dashboard JSON</h3>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="json-editor" spellcheck="false"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="toolbar-btn" id="btn-cancel">Cancel</button>
+        <button class="toolbar-btn primary" id="btn-apply">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Module script -->
+  <script type="module">
+    import { renderDashboard, updateDashboard, parse, validate } from './src/index.ts';
+
+    // ─── State ────────────────────────────────────
+    let currentConfig = null;
+    let dashboardEl = null;
+
+    // ─── DOM refs ─────────────────────────────────
+    const appEl       = document.getElementById('app');
+    const modal       = document.getElementById('modal');
+    const editor      = document.getElementById('json-editor');
+    const toast       = document.getElementById('toast');
+    const statusInfo  = document.getElementById('status-info');
+    const fileInput   = document.getElementById('file-input');
+
+    // ─── Load default dashboard JSON ──────────────
+    async function loadDefaultDashboard() {
+      try {
+        const res = await fetch('/dsl-demo/dashboard.json');
+        const json = await res.json();
+        applyConfig(json);
+      } catch (err) {
+        showToast('Failed to load default dashboard: ' + err.message);
+      }
+    }
+
+    // ─── Apply config ─────────────────────────────
+    function applyConfig(json) {
+      // Validate
+      const validation = validate(json);
+      if (!validation.valid) {
+        showToast('Validation errors: ' + validation.errors.map(e => e.message).join('; '));
+        // Still render — component has its own error display
+      }
+
+      currentConfig = json;
+
+      if (dashboardEl) {
+        updateDashboard(dashboardEl, currentConfig);
+      } else {
+        dashboardEl = renderDashboard(appEl, currentConfig);
+      }
+
+      updateStatus(json);
+    }
+
+    function updateStatus(json) {
+      const nodeCount = countNodes(json.layout);
+      statusInfo.textContent = `${json.meta?.title || 'Untitled'} · ${nodeCount} nodes · theme: ${json.meta?.theme || '?'}`;
+    }
+
+    function countNodes(node) {
+      let count = 1;
+      if (Array.isArray(node?.children)) {
+        for (const child of node.children) {
+          count += countNodes(child);
+        }
+      }
+      return count;
+    }
+
+    // ─── Toast ────────────────────────────────────
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 5000);
+    }
+
+    // ─── Edit JSON modal ──────────────────────────
+    document.getElementById('btn-edit').addEventListener('click', () => {
+      editor.value = JSON.stringify(currentConfig, null, 2);
+      modal.classList.add('open');
+    });
+
+    document.getElementById('modal-close').addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+
+    document.getElementById('btn-cancel').addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+
+    document.getElementById('btn-apply').addEventListener('click', () => {
+      const result = parse(editor.value);
+      if (!result.success) {
+        showToast('Invalid JSON: ' + result.error);
+        return;
+      }
+      applyConfig(result.data);
+      modal.classList.remove('open');
+    });
+
+    // Close modal on overlay click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+
+    // ─── Toggle theme ─────────────────────────────
+    document.getElementById('btn-toggle-theme').addEventListener('click', () => {
+      if (!currentConfig) return;
+      const newTheme = currentConfig.meta.theme === 'dark' ? 'light' : 'dark';
+      currentConfig = {
+        ...currentConfig,
+        meta: { ...currentConfig.meta, theme: newTheme },
+      };
+      applyConfig(currentConfig);
+    });
+
+    // ─── Load JSON file ───────────────────────────
+    document.getElementById('btn-load-file').addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = parse(reader.result);
+        if (!result.success) {
+          showToast('Invalid JSON file: ' + result.error);
+          return;
+        }
+        applyConfig(result.data);
+      };
+      reader.readAsText(file);
+      fileInput.value = '';
+    });
+
+    // ─── Init ─────────────────────────────────────
+    loadDefaultDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "kind": "dashboard",
+  "uuid": "d2e08ff3-9735-40e8-af55-0c38beef6f36",
+  "meta": {
+    "title": "Analytics Overview",
+    "description": "Real-time metrics and performance insights",
+    "theme": "dark"
+  },
+  "layout": {
+    "id": "ROOT_ID",
+    "type": "ROOT",
+    "style": {
+      "background": "transparent"
+    },
+    "children": [
+      {
+        "id": "ROW-metrics-top",
+        "type": "ROW",
+        "style": { "background": "transparent" },
+        "children": [
+          {
+            "id": "COL-chart-revenue",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 12, "md": 6, "lg": 6, "xl": 6, "xxl": 6 },
+            "height": { "xs": "240px", "sm": "260px", "md": "280px", "lg": "320px", "xl": "340px", "xxl": "360px" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "CHART-revenue",
+                "type": "CHART",
+                "chartId": 101,
+                "title": "Monthly Revenue",
+                "description": "Revenue trends over the last 12 months"
+              }
+            ]
+          },
+          {
+            "id": "COL-chart-users",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 12, "md": 6, "lg": 6, "xl": 6, "xxl": 6 },
+            "height": { "xs": "240px", "sm": "260px", "md": "280px", "lg": "320px", "xl": "340px", "xxl": "360px" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "CHART-active-users",
+                "type": "CHART",
+                "chartId": 102,
+                "title": "Active Users",
+                "description": "Daily active users and engagement metrics"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ROW-content-mid",
+        "type": "ROW",
+        "style": { "background": "transparent" },
+        "children": [
+          {
+            "id": "COL-markdown-notes",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 12, "md": 4, "lg": 4, "xl": 4, "xxl": 4 },
+            "height": { "xs": "auto", "sm": "auto", "md": "auto", "lg": "auto", "xl": "auto", "xxl": "auto" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "MARKDOWN-overview",
+                "type": "MARKDOWN",
+                "content": "# Quick Summary\n\nKey highlights for this quarter:\n\n- **Revenue** increased by `23%` vs last quarter\n- **User retention** at an all-time high of `89.4%`\n- **API latency** reduced to `< 50ms` p99\n\n> 🚀 The team shipped **14 features** this sprint.\n\n---\n\n### Next Steps\n\n1. Finalize Q3 roadmap\n2. Scale infrastructure to 10K RPS\n3. Launch mobile SDK v2"
+              }
+            ]
+          },
+          {
+            "id": "COL-chart-perf",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 12, "md": 8, "lg": 8, "xl": 8, "xxl": 8 },
+            "height": { "xs": "280px", "sm": "300px", "md": "320px", "lg": "360px", "xl": "380px", "xxl": "400px" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "CHART-performance",
+                "type": "CHART",
+                "chartId": 103,
+                "title": "API Performance",
+                "description": "Response times, error rates, and throughput"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ROW-bottom",
+        "type": "ROW",
+        "style": { "background": "transparent" },
+        "children": [
+          {
+            "id": "COL-divider-bottom",
+            "type": "COL",
+            "width":  { "xs": 12 },
+            "height": { "xs": "auto" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "DIVIDER-bottom",
+                "type": "DIVIDER"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ROW-charts-bottom",
+        "type": "ROW",
+        "style": { "background": "transparent" },
+        "children": [
+          {
+            "id": "COL-chart-b1",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4, "xxl": 4 },
+            "height": { "xs": "220px", "sm": "240px", "md": "260px", "lg": "280px", "xl": "300px", "xxl": "320px" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "CHART-conversion",
+                "type": "CHART",
+                "chartId": 104,
+                "title": "Conversion Rate",
+                "description": "Funnel conversion from visit to signup"
+              }
+            ]
+          },
+          {
+            "id": "COL-chart-b2",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4, "xxl": 4 },
+            "height": { "xs": "220px", "sm": "240px", "md": "260px", "lg": "280px", "xl": "300px", "xxl": "320px" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "CHART-errors",
+                "type": "CHART",
+                "chartId": 105,
+                "title": "Error Rate",
+                "description": "5xx and 4xx error distribution"
+              }
+            ]
+          },
+          {
+            "id": "COL-chart-b3",
+            "type": "COL",
+            "width":  { "xs": 12, "sm": 12, "md": 4, "lg": 4, "xl": 4, "xxl": 4 },
+            "height": { "xs": "220px", "sm": "240px", "md": "260px", "lg": "280px", "xl": "300px", "xxl": "320px" },
+            "style": { "background": "transparent" },
+            "children": [
+              {
+                "id": "CHART-uptime",
+                "type": "CHART",
+                "chartId": 106,
+                "title": "System Uptime",
+                "description": "Service availability over 30 days"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

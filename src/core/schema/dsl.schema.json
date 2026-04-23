@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/dsl.schema.json",
+  "title": "Dashboard DSL Schema",
+  "type": "object",
+  "required": ["version", "kind", "uuid", "meta", "layout"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "kind": {
+      "type": "string",
+      "const": "dashboard"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "meta": {
+      "type": "object",
+      "required": ["title", "description", "theme"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "theme": { "type": "string", "enum": ["dark", "light"] }
+      }
+    },
+    "layout": {
+      "$ref": "#/$defs/rootNode"
+    }
+  },
+  "$defs": {
+    "responsiveWidth": {
+      "type": "object",
+      "required": ["xs"],
+      "additionalProperties": false,
+      "properties": {
+        "xs": { "type": "integer", "minimum": 1, "maximum": 12, "default": 12 },
+        "sm": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "md": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "lg": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "xl": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "xxl": { "type": "integer", "minimum": 1, "maximum": 12 }
+      }
+    },
+    "responsiveHeight": {
+      "type": "object",
+      "required": ["xs"],
+      "additionalProperties": false,
+      "properties": {
+        "xs": { "type": "string", "pattern": "^(auto|[0-9]+(px|vh|%))$" },
+        "sm": { "type": "string", "pattern": "^(auto|[0-9]+(px|vh|%))$" },
+        "md": { "type": "string", "pattern": "^(auto|[0-9]+(px|vh|%))$" },
+        "lg": { "type": "string", "pattern": "^(auto|[0-9]+(px|vh|%))$" },
+        "xl": { "type": "string", "pattern": "^(auto|[0-9]+(px|vh|%))$" },
+        "xxl": { "type": "string", "pattern": "^(auto|[0-9]+(px|vh|%))$" }
+      }
+    },
+    "style": {
+      "type": "object",
+      "required": ["background"],
+      "additionalProperties": true,
+      "properties": {
+        "background": { "type": "string" }
+      }
+    },
+    "rootNode": {
+      "type": "object",
+      "required": ["id", "type", "style", "children"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "const": "ROOT" },
+        "style": { "$ref": "#/$defs/style" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/rowNode" }
+        }
+      }
+    },
+    "rowNode": {
+      "type": "object",
+      "required": ["id", "type", "style", "children"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "const": "ROW" },
+        "style": { "$ref": "#/$defs/style" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/rowChildNode" }
+        }
+      }
+    },
+    "rowChildNode": {
+      "oneOf": [{ "$ref": "#/$defs/colNode" }]
+    },
+    "colNode": {
+      "type": "object",
+      "required": ["id", "type", "width", "height", "style", "children"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "const": "COL" },
+        "width": { "$ref": "#/$defs/responsiveWidth" },
+        "height": { "$ref": "#/$defs/responsiveHeight" },
+        "style": { "$ref": "#/$defs/style" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/contentNode" }
+        }
+      }
+    },
+    "chartNode": {
+      "type": "object",
+      "required": ["id", "type", "chartId", "title", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "const": "CHART" },
+        "chartId": { "type": "integer" },
+        "title": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "markdownNode": {
+      "type": "object",
+      "required": ["id", "type", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "const": "MARKDOWN" },
+        "content": { "type": "string" }
+      }
+    },
+    "dividerNode": {
+      "type": "object",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "const": "DIVIDER" }
+      }
+    },
+    "contentNode": {
+      "oneOf": [
+        { "$ref": "#/$defs/chartNode" },
+        { "$ref": "#/$defs/markdownNode" },
+        { "$ref": "#/$defs/dividerNode" }
+      ]
+    }
+  }
+}
